@@ -96,4 +96,90 @@ def fetch_exchange_rates(driver: webdriver.Chrome, url: str, timeout: int = 20) 
         
     except Exception as e:
         logger.error(f"予期しないエラーが発生しました: {str(e)}")
+        return None
+
+def fetch_historical_rates(driver: webdriver.Chrome, url: str, currency_code: str = "USD", timeout: int = 30) -> Optional[Dict[str, float]]:
+    """
+    指定されたURLから特定通貨の過去1ヶ月分の為替レート履歴を取得する関数
+    
+    Args:
+        driver (webdriver.Chrome): 設定済みWebDriverインスタンス
+        url (str): ヒストリカルデータページのURL
+        currency_code (str): 取得対象の通貨コード（デフォルトはUSD）
+        timeout (int): 要素検索のタイムアウト秒数
+    
+    Returns:
+        Optional[Dict[str, float]]: 取得した履歴データ（日付: レート値）、取得失敗時はNone
+    """
+    try:
+        logger.info(f"履歴データページ {url} へアクセス中...")
+        
+        # 指定URLへアクセス
+        driver.get(url)
+        
+        # JavaScript完全読み込みを待機
+        time.sleep(2)
+        
+        # ページ読み込み状態をログに出力
+        logger.info(f"ページタイトル: {driver.title}")
+        logger.info(f"現在のURL: {driver.current_url}")
+        
+        # 履歴テーブルが表示されるまで待機
+        logger.info("履歴データテーブルを待機中...")
+        WebDriverWait(driver, timeout).until(
+            EC.visibility_of_element_located((By.TAG_NAME, "table"))
+        )
+        
+        # テーブルの行を全て取得
+        table_rows = driver.find_elements(By.CSS_SELECTOR, "table tr")
+        logger.info(f"{len(table_rows)}行のテーブルデータを検出しました")
+        
+        if len(table_rows) <= 1:  # ヘッダー行のみの場合
+            logger.error("テーブルにデータ行が見つかりませんでした")
+            return None
+        
+        # 日付とレートの辞書を作成
+        historical_rates = {}
+        
+        # 1行目はヘッダーなのでスキップし、2行目から処理
+        for row in table_rows[1:]:
+            try:
+                columns = row.find_elements(By.TAG_NAME, "td")
+                if len(columns) >= 2:
+                    date_str = columns[0].text.strip()
+                    rate_str = columns[1].text.strip()
+                    
+                    # レート値を数値に変換
+                    try:
+                        rate_value = float(rate_str)
+                        historical_rates[date_str] = rate_value
+                        logger.info(f"取得: {date_str} = {rate_value}")
+                    except ValueError:
+                        logger.warning(f"レート値の変換に失敗: {rate_str}")
+                        continue
+            except (NoSuchElementException, IndexError) as e:
+                logger.warning(f"行データの解析中にエラー: {str(e)}")
+                continue
+        
+        if not historical_rates:
+            logger.error("有効な履歴データを取得できませんでした")
+            return None
+        
+        logger.info(f"{len(historical_rates)}日分の履歴データの取得に成功しました")
+        return historical_rates
+        
+    except TimeoutException:
+        logger.error(f"タイムアウト: {timeout}秒以内に履歴データテーブルが見つかりませんでした")
+        return None
+        
+    except NoSuchElementException:
+        logger.error("要素が見つかりません: 履歴データテーブルの要素が存在しないか変更された可能性があります")
+        return None
+        
+    except WebDriverException as e:
+        logger.error(f"WebDriverでエラーが発生しました: {str(e)}")
+        return None
+        
+    except Exception as e:
+        logger.error(f"予期しないエラーが発生しました: {str(e)}")
         return None 

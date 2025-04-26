@@ -6,7 +6,7 @@ import streamlit as st
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager  # クラウド環境では不要
 
 # ロギング設定
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -35,11 +35,12 @@ def setup_driver() -> Optional[webdriver.Chrome]:
         chrome_options.add_argument("--enable-javascript")
         chrome_options.add_argument("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         
-        # ChromeDriverのセットアップ（自動インストール）
-        service = Service(ChromeDriverManager().install())
+        # Streamlit Cloud環境用の追加設定
+        chrome_options.add_argument("--disable-setuid-sandbox")
+        chrome_options.add_argument("--single-process")
         
-        # WebDriverインスタンスの作成
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        # WebDriverインスタンスの作成（クラウド環境向けに簡易化）
+        driver = webdriver.Chrome(options=chrome_options)
         
         # タイムアウト設定
         driver.set_page_load_timeout(30)  # ページ読み込みタイムアウト30秒
