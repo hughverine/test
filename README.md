@@ -1,48 +1,35 @@
-# 外部サイト カウント取得ツール
+---
+title: 為替レート取得ツール
+emoji: 💹
+colorFrom: blue
+colorTo: green
+sdk: streamlit
+sdk_version: 1.32.0
+app_file: app.py
+pinned: false
+---
 
-このツールは、指定された外部ウェブサイト（[https://prismatic-centaur-0eadf3.netlify.app/](https://prismatic-centaur-0eadf3.netlify.app/)）にJavaScriptによって動的に表示されているカウント数値を、ユーザーが任意のタイミングで手動取得し、その結果をStreamlitアプリケーション画面に表示するツールです。
+# 為替レート取得ツール
+
+## 概要
+このアプリケーションは、為替レートをリアルタイムで取得・表示するツールです。
 
 ## 機能
-
-- 指定された外部サイトのカウント数値を取得
-- ボタンクリックでカウント取得を手動実行
-- 取得中の視覚的フィードバック表示
-- 取得結果の表示（成功時は数値、失敗時はエラーメッセージ）
-- 前回取得した値のセッション保持
-
-## 必要環境
-
-- Python 3.9以上
-- Google Chrome（または Firefox）ブラウザがインストール済み
-- インターネット接続（外部サイトへのアクセスが可能であること）
-
-## インストール方法
-
-1. リポジトリをクローンまたはダウンロード
-2. 依存関係のインストール
-   ```
-   pip install -r requirements.txt
-   ```
+- USD/JPYの為替レート表示
+- 履歴データのグラフ表示
+- その他の通貨ペアの表示
 
 ## 使用方法
+1. アプリを起動します
+2. 必要な通貨ペアを選択します
+3. データが表示されます
 
-1. アプリケーションを起動
-   ```
-   streamlit run app.py
-   ```
-2. ブラウザでStreamlitアプリが開きます（デフォルト: http://localhost:8501）
-3. 「最新のカウントを取得」ボタンをクリックしてカウントを取得
-4. 結果が表示されます
+## 技術スタック
+- Python
+- Streamlit
+- Selenium
+- Pandas
+- Matplotlib
 
-## ファイル構成
-
-- `app.py` - Streamlitアプリケーションのメインスクリプト
-- `webdriver_utils.py` - Selenium WebDriverのセットアップ機能
-- `scraper.py` - 外部サイトからのカウント取得機能
-- `requirements.txt` - 依存ライブラリ情報
-
-## 注意事項
-
-- 対象サイトの構造変更により、ツールが動作しなくなる可能性があります
-- WebDriverを使用するため、初回起動時にはブラウザドライバのダウンロードが発生します
-- ヘッドレスモードで動作しますが、システムにブラウザ本体は必要です 
+## デプロイ
+このアプリはHugging Face Spacesでホストされています 

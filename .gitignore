@@ -1,0 +1,24 @@
+# 仮想環境
+.venv/
+venv/
+env/
+
+# Python キャッシュファイル
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ローカル開発設定
+.env
+.env.local
+.streamlit/secrets.toml
+
+# システムファイル
+.DS_Store
+Thumbs.db
+
+# ログファイル
+*.log
+
+# テンポラリファイル
+*.tmp 
